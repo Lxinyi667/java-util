@@ -1,0 +1,29 @@
+
+name: Test Workflow
+
+#on: [push]
+#on: [push.pull.pull.request]
+on:
+  push:
+    branches:
+      - main
+
+#        一个workflow 可以由多个job组成，可以并行或分离运行
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+       # 使用现成的action,将代码签出
+      - uses: actions/checkout@v2
+        #使用JDK17
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+      #使用 Maven
+      - name: Build with Maven
+        run: mvn -B test --file pom.xml
+      - uses: ashley-taylor/junit-report-annotations-action@master
+        with:
+          access-token: ${{ secrets.GITHUB_TOKEN }}
+        if: always()
